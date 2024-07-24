@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { IoEllipseSharp } from 'react-icons/io5';
 
- 
 const LoginPage = () => {
     const [loginData, setLoginData] = useState({ username: '', password: '' });
+    const [message, setMessage] = useState('');
 
     const handleLoginChange = (e) => {
         const { name, value } = e.target;
@@ -15,23 +14,16 @@ const LoginPage = () => {
         }));
     };
 
-    const handleLoginSubmit =async(e) => {
+    const handleLoginSubmit = async (e) => {
         e.preventDefault();
-       try{
-        const response = await axios.post('http://localhost:8000/login',loginData);
-        const {success,message}= response.data;
-        if(success){
-            console.log('login successfully');
+        try {
+            const response = await axios.post('http://localhost:8000/login', loginData);
+            const { success, message } = response.data;
+            setMessage(success ? 'Login successful' : message);
+        } catch (error) {
+            console.error('Login error:', error);
+            setMessage('An error occurred during login. Please try again.');
         }
-        else{
-            console.log(message);
-        }
-       }
-       catch(error){
-        console.error('login error',error)
-
-       }
-       setLoginData
     };
 
     return (
@@ -56,10 +48,10 @@ const LoginPage = () => {
                 />
                 <button type="submit">Login</button>
                 <p>
-                    Not registered yet?{' '}
-                    <Link to="/register">Register here</Link>
+                    Not registered yet? <Link to="/register">Register here</Link>
                 </p>
             </form>
+            {message && <p>{message}</p>}
         </div>
     );
 };
